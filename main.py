@@ -49,10 +49,27 @@ def quadratic_multiply(x, y):
     return _quadratic_multiply(x,y).decimal_val
 
 def _quadratic_multiply(x, y):
-    ### TODO
-    pass
-    ###
+    xvec = x.binary_vec
+    yvec = y.binary_vec
+    xvec, yvec = pad(xvec, yvec)
 
+    # Base case: If x or y is a single bit, return their product
+    if x.decimal_val <= 1 and y.decimal_val <= 1:
+        return BinaryNumber(x.decimal_val * y.decimal_val)
+
+    # Split numbers into left and right halves
+    x_left, x_right = split_number(xvec)
+    y_left, y_right = split_number(yvec)
+
+    # Recursive calls
+    term1 = bit_shift(_quadratic_multiply(x_left, y_left), len(xvec)).decimal_val
+    term2_xlyr = _quadratic_multiply(x_left, y_right).decimal_val
+    term2_xryl = _quadratic_multiply(x_right, y_left).decimal_val
+    term2 = bit_shift(BinaryNumber(term2_xlyr + term2_xryl), len(xvec) // 2).decimal_val
+    term3 = _quadratic_multiply(x_right, y_right).decimal_val
+
+    # Return the final sum as a BinaryNumber
+    return BinaryNumber(term1 + term2 + term3)  
 
     
     
